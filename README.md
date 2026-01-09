@@ -93,6 +93,7 @@ Install **Python 3.11.x**
 Download Ollama for Windows:  
 👉 https://ollama.com/download
 
+Application Preview
 <img width="1916" height="904" alt="image" src="https://github.com/user-attachments/assets/2c843b83-9ab3-48ce-9cf0-4ad232e51c4c" />
 
 After installation, pull the required model:
@@ -169,4 +170,5 @@ Docker-based deployment
 
 
 Section-level confidence visualization
+
 
