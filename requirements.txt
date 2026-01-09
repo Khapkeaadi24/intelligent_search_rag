@@ -1,0 +1,43 @@
+# ------------------------------
+# Core App & UI
+# ------------------------------
+streamlit
+
+# ------------------------------
+# LangChain (Stable + Compatible)
+# ------------------------------
+langchain
+langchain-core
+langchain-community
+
+# ------------------------------
+# Local LLM Runtime (Ollama)
+# ------------------------------
+ollama
+#current model : ollama run tinyllama:1.1b-chat
+#model : llama3:8b-instruct-q4_0
+
+# ------------------------------
+# Vector Store
+# ------------------------------
+faiss-cpu
+
+# ------------------------------
+# Embeddings
+# ------------------------------
+sentence-transformers
+torch
+
+# ------------------------------
+# PDF Export
+# ------------------------------
+reportlab
+
+# ------------------------------
+# Utilities
+# ------------------------------
+numpy
+pydantic
+python-dotenv
+
+reportlab
