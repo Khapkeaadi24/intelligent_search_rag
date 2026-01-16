@@ -1,67 +1,67 @@
-# 🧠 Intelligent Search-Based RAG System (Hybrid Verified Mode)
+# 🧠 VeriSearch AI — Document-First Verified Research System (v2)
 
-An **offline, enterprise-style research assistant** that converts open-ended user queries into **structured, transparent, and confidence-aware research reports** using a Retrieval-Augmented Generation (RAG) pipeline.
+VeriSearch AI is an **offline, enterprise-style research assistant** that transforms user queries and uploaded documents into **structured, transparent, and confidence-aware research reports** using a **document-first Retrieval-Augmented Generation (RAG)** pipeline.
 
-This project addresses the limitations of traditional web search such as unstructured results, repetition, and lack of verification.
-
----
-
-## 🚀 Problem Statement
-
-Traditional web search engines return large volumes of:
-- unstructured information
-- repetitive content
-- mixed reliability sources  
-
-Users must manually verify, compare, and structure information, which is **time-consuming and error-prone**.
+This version focuses on **professional research synthesis**, not chatbot-style answering.
 
 ---
 
-## ✅ Solution
+## 🚩 Problem Statement
 
-This project implements an **Intelligent Search-Based RAG System** that:
+Traditional research workflows suffer from:
 
-- Accepts **any research query**
-- Retrieves **verified contextual information**
-- Separates **verified facts** from **analytical inference**
-- Produces **structured research reports**
-- Provides a **research confidence score**
-- Exports results as **PDF reports**
-- Runs **fully offline** using a local LLM
+- Unstructured search results
+- Repetitive or shallow summaries
+- Mixed reliability of sources
+- Lack of transparency between facts and inference
+
+Managers and researchers need **clear, auditable, and structured reports**, not chat responses.
 
 ---
 
-## 🧠 Key Concept: Hybrid Verified Mode
+## ✅ Solution Overview
 
-Instead of behaving like a chatbot, the system operates in **Hybrid Verified Mode**:
+VeriSearch AI provides:
 
-- ✔ **Verified Findings**  
-  Information grounded in retrieved context
+- 📄 Document-first research (PDFs, text inputs)
+- 🧠 Hybrid reasoning (verified content + analytical synthesis)
+- 📊 Structured, manager-ready research reports
+- 🔎 Research confidence indicators
+- 📄 Professional PDF export
+- 💻 Fully offline execution using a local LLM
 
-- ⚠ **Analytical Inference (Not Directly Verified)**  
-  Clearly labeled reasoning based on general domain knowledge
+---
 
-This approach balances **accuracy, transparency, and practical usefulness**, which is critical for enterprise and research use cases.
+## 🧠 Core Concept: Hybrid Verified Mode
+
+Instead of claiming full verification, the system **clearly separates**:
+
+### ✔ Document-Grounded Analysis
+Insights derived directly from uploaded documents
+
+### ⚠ Analytical Reasoning
+Logical synthesis based on local LLM reasoning  
+*(clearly labeled — no false verification claims)*
+
+This ensures **honesty, transparency, and enterprise trust**.
 
 ---
 
 ## 🏗️ System Architecture
 
-User Query
+User Query / Document Upload
 ↓
-Verified Search Layer
+Document Extraction
 ↓
-Text Chunking
+Chunking & Embeddings
 ↓
-Embeddings Generation
+Vector Retrieval (FAISS)
 ↓
-FAISS Vector Store
-↓
-Hybrid Verified QA (Local LLM)
+Local LLM Reasoning (TinyLLaMA via Ollama)
 ↓
 Structured Research Report
 ↓
-Confidence Score + PDF Export
+Confidence Scoring + PDF Export
 
 
 ---
@@ -69,100 +69,92 @@ Confidence Score + PDF Export
 ## 🧰 Tech Stack
 
 - **Python 3.11**
-- **Streamlit** – Web UI
-- **LangChain** – RAG orchestration
-- **FAISS** – Vector similarity search
-- **SentenceTransformers** – Local embeddings
-- **Ollama** – Local LLM runtime
-- **TinyLLaMA (1.1B)** – Lightweight CPU-only LLM
-- **ReportLab** – PDF generation
+- **Streamlit** — UI
+- **LangChain** — RAG orchestration
+- **FAISS** — Vector similarity search
+- **SentenceTransformers** — Local embeddings
+- **Ollama** — Local LLM runtime
+- **TinyLLaMA (1.1B)** — CPU-friendly LLM
+- **ReportLab** — Professional PDF generation
 
 ---
 
 ## ⚙️ Installation & Setup
 
 ### 1️⃣ Install Python
-Install **Python 3.11.x**  
+Download Python 3.11  
 👉 https://www.python.org/downloads/
 
-> Make sure **“Add Python to PATH”** is checked during installation.
+(Enable **Add Python to PATH**)
 
 ---
 
 ### 2️⃣ Install Ollama
-Download Ollama for Windows:  
 👉 https://ollama.com/download
 
-After installation, pull the required model:
+Pull the model:
 ```bash
 ollama pull tinyllama:1.1b-chat
-
-3️⃣ Clone or Download the Project
-git clone <your-repo-url>
+3️⃣ Clone Repository
+git clone https://github.com/Khapkeaadi24/intelligent_search_rag_24.git
 cd intelligent-search-rag
-
-
-(or download ZIP and extract)
-
 4️⃣ Create Virtual Environment
 python -m venv .venv
 .venv\Scripts\activate
-
 5️⃣ Install Dependencies
 pip install -r requirements.txt
-
-6️⃣ Run the Application
-python -m streamlit run app.py
-
-
-The app will open at:
+6️⃣ Run Application
+streamlit run app.py
+Open:
 
 http://localhost:8501
-
 📊 Features
+🔍 Research on any topic
 
-🔍 Intelligent research for any query
+📄 Document-based analysis
 
-🧠 Hybrid Verified RAG (no hidden hallucination)
+🧠 Hybrid verified reasoning
 
-⏳ Time-based filtering (6 months / 1 year)
+⏳ Time range configuration
 
-🆚 Competitor analysis mode
+🆚 Competitor analysis framework
 
-🔎 Research confidence indicator
+📈 Research confidence scoring
 
-📄 PDF export (manager-ready reports)
+📄 Professional PDF export
 
 💻 Fully offline execution
 
-📌 Example Use Cases
-
-Company & competitor research
+📌 Use Cases
+Company & market research
 
 Technology trend analysis
 
-Academic or industry research
+Academic paper review
 
 Strategic decision support
 
-Internal knowledge exploration
+Internal knowledge synthesis
 
-⚠️ Limitations
+⚠️ Current Limitations
+No live web search or URLs (by design)
 
-Output quality depends on the quality of retrieved sources
+Output quality depends on uploaded documents
 
-Lightweight model used for low-resource environments
+Lightweight LLM used for local demo purposes
 
-Real-time web citations are not enabled (architecture supports future integration)
+🔮 Planned Enhancements
+Live web verification APIs
 
-🔮 Future Enhancements
+URL-level citations
 
-Live web search integration (Bing / Wikipedia)
+Voice & image input
 
-Real URL-based citations
+Multi-document cross-analysis
 
-Domain-specific research modes
+Docker deployment
 
-Docker-based deployment
+🧾 Methodological Note
+This system does not claim real-time verification in its current version.
+All results are transparently labeled and generated using local AI reasoning over user-provided documents.
 
-Section-level confidence visualization
