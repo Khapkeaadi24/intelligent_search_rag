@@ -1,6 +1,2 @@
-from langchain_community.vectorstores import FAISS
-
-def create_vector_store(chunks, embeddings):
-    vector_store = FAISS.from_documents(chunks, embeddings)
-    return vector_store
-
+def build_vector_store(embedded_chunks):
+    return embedded_chunks

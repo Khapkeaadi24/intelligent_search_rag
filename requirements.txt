@@ -41,3 +41,10 @@ pydantic
 python-dotenv
 
 reportlab
+
+PyPDF2
+pytesseract
+pillow
+pandas
+
+langchain-text-splitters

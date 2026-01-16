@@ -1,145 +1,121 @@
 import streamlit as st
+from PIL import Image
 
-from search.web_search import web_search
+from utils.document_loader import extract_text_from_file
 from ingestion.chunker import chunk_text
-from rag.vector_store import create_vector_store
-from rag.embeddings import get_embeddings
-from rag.qa import get_qa_chain
+from rag.embeddings import embed_chunks
+from rag.vector_store import build_vector_store
+from rag.qa import run_qa
 from report.report_generator import generate_report
 from report.pdf_exporter import export_pdf
-from analysis.competitor import generate_competitor_report
-from analysis.confidence import calculate_confidence
-from analysis.query_decomposer import decompose_query
 
 
-# -------------------------------------------------
-# Page Config
-# -------------------------------------------------
 st.set_page_config(
-    page_title="Intelligent Search-Based RAG",
-    page_icon="🧠",
-    layout="wide",
+    page_title="VeriSearch AI",
+    layout="wide"
 )
 
-# -------------------------------------------------
-# Header
-# -------------------------------------------------
-st.markdown("""
-# 🧠 Intelligent Search-Based RAG System
-### Verified, source-grounded research for strategic decision making
-""")
+# ---------- HEADER ----------
+st.title("🔍 VeriSearch AI — Verified Research System")
+st.caption("Document-first | Configurable | No hallucinations | API-ready")
 
-# -------------------------------------------------
-# Sidebar Controls
-# -------------------------------------------------
-st.sidebar.header("🔧 Research Controls")
+# ---------- SIDEBAR CONFIG ----------
+st.sidebar.header("🔧 Research Configuration")
 
 research_mode = st.sidebar.selectbox(
     "Research Mode",
-    ["Single Topic Research", "Competitor Analysis"]
+    ["Exploratory", "Hybrid", "Document-only"]
 )
 
 research_depth = st.sidebar.selectbox(
     "Research Depth",
-    ["Overview", "Detailed", "Deep Analysis"]
+    ["Summary", "Detailed", "Deep"]
 )
 
 output_style = st.sidebar.selectbox(
     "Output Style",
-    ["Executive Summary", "Business Report", "Technical Report"]
+    ["Executive", "Technical", "Academic"]
 )
 
 time_range = st.sidebar.selectbox(
     "Time Range",
-    ["Last 6 months", "Last 1 year"]
+    ["Last 6 months", "Last 12 months", "All time"]
 )
 
-months = 6 if time_range == "Last 6 months" else 12
+use_local_llm = st.sidebar.checkbox(
+    "Use local AI reasoning (Ollama)",
+    value=True
+)
 
-# -------------------------------------------------
-# Main Input
-# -------------------------------------------------
-query = st.text_input("Enter your research query")
+st.sidebar.markdown("---")
+st.sidebar.info(
+    "External APIs are intentionally disabled.\n\n"
+    "This system currently performs:\n"
+    "- Document-grounded synthesis\n"
+    "- Honest exploratory reasoning\n\n"
+    "Live verification will be added later."
+)
 
-run_btn = st.button("🚀 Generate Report")
+# ---------- MAIN INPUT ----------
+st.subheader("🧠 Research Input")
 
-# -------------------------------------------------
-# Run Logic
-# -------------------------------------------------
-if run_btn and query:
+query = st.text_input(
+    "Research Question (optional)",
+    placeholder="e.g. Fintech companies in India"
+)
 
-    with st.status("Running research pipeline...", expanded=True) as status:
-        st.write("🔍 Ingesting verified sources")
-        st.write("📄 Chunking & indexing knowledge")
-        st.write("🧠 Performing grounded analysis")
-        st.write("📝 Generating structured report")
+uploaded_file = st.file_uploader(
+    "Upload document (PDF or TXT)",
+    type=["pdf", "txt"]
+)
 
-        # -------------------------------------------------
-        # COMPETITOR ANALYSIS MODE
-        # -------------------------------------------------
-        if research_mode == "Competitor Analysis":
-            report = generate_competitor_report(query)
-            status.update(label="Competitor analysis completed", state="complete")
-            st.markdown(report)
+# ---------- VALIDATION ----------
+if not query and not uploaded_file:
+    st.warning("Please provide at least a research question or a document.")
 
-        # -------------------------------------------------
-        # SINGLE TOPIC RESEARCH (SAFE RAG MODE)
-        # -------------------------------------------------
-        else:
-            # 1. Search (time-aware)
-            docs = web_search(query, months=months)
+# ---------- GENERATE ----------
+if st.button("🚀 Generate Research Report"):
+    with st.spinner("Processing research pipeline..."):
 
-            # 2. Chunking
-            chunks = chunk_text(docs)
+        documents = []
 
-            if not chunks:
-                st.error("No valid information found. Try a more specific query.")
-                st.stop()
+        if uploaded_file:
+            raw_text = extract_text_from_file(uploaded_file)
+            chunks = chunk_text(raw_text)
+            documents = chunks
 
-            # 3. Confidence Score
-            confidence = calculate_confidence(
-                num_sources=len(docs),
-                num_chunks=len(chunks)
+            vector_store = build_vector_store(
+                embed_chunks(chunks)
             )
-            st.metric("🔎 Research Confidence", confidence)
 
-            # 4. Vector Store + QA Chain
-            embeddings = get_embeddings()
-            vector_store = create_vector_store(chunks, embeddings)
-            qa_chain = get_qa_chain(vector_store)
+        answer = ""
+        if query and use_local_llm:
+            answer = run_qa(
+                query=query,
+                vector_store=vector_store if uploaded_file else None,
+                mode=research_mode,
+                depth=research_depth,
+                style=output_style
+            )
 
-            # 5. SAFE Query Decomposition (ONE LLM CALL)
-            sub_queries = decompose_query(query)
+        report = generate_report(
+            query=query,
+            documents=documents,
+            answer=answer,
+            mode=research_mode,
+            depth=research_depth,
+            style=output_style,
+            time_range=time_range
+        )
 
-            combined_prompt = f"""
-You are performing structured research.
+        st.success("Research report generated")
 
-Answer ALL sub-questions below using ONLY the verified context provided.
+        st.markdown(report)
 
-Sub-questions:
-{chr(10).join(f"- {q}" for q in sub_queries)}
-
-Provide a structured, factual, and concise analysis.
-"""
-
-            final_answer = qa_chain.invoke(combined_prompt)
-
-            # 6. Report Generation
-            report = generate_report(query, final_answer)
-
-            status.update(label="Research completed", state="complete")
-            st.markdown(report)
-
-            # -------------------------------------------------
-            # PDF EXPORT
-            # -------------------------------------------------
-            st.divider()
-            if st.button("📄 Export as PDF"):
-                pdf_file = export_pdf(report)
-                with open(pdf_file, "rb") as f:
-                    st.download_button(
-                        label="⬇ Download Report",
-                        data=f,
-                        file_name=pdf_file,
-                        mime="application/pdf"
-                    )
+        pdf_path = export_pdf(report)
+        with open(pdf_path, "rb") as f:
+            st.download_button(
+                "📄 Download PDF",
+                f,
+                file_name="verisearch_report.pdf"
+            )
